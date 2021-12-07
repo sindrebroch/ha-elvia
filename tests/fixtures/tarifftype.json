@@ -1,0 +1,12 @@
+{
+    "tariffTypes": [
+      {
+        "tariffKey": "string",
+        "company": "string",
+        "customerType": "string",
+        "title": "string",
+        "resolution": 0,
+        "description": "string"
+      }
+    ]
+  }

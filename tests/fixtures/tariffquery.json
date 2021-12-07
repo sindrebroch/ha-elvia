@@ -1,0 +1,48 @@
+{
+    "gridTariff": {
+      "tariffType": {
+        "tariffKey": "string",
+        "company": "string",
+        "customerType": "string",
+        "title": "string",
+        "resolution": 0,
+        "description": "string"
+      },
+      "tariffPrice": {
+        "priceInfo": [
+          {
+            "startTime": "string",
+            "expiredAt": "string",
+            "hoursShortName": "string",
+            "season": "string",
+            "publicHoliday": true,
+            "fixedPrices": [
+              {
+                "priceLevel": [
+                  {
+                    "level": "string",
+                    "levelInfo": "string",
+                    "total": 0.0,
+                    "fixed": 0.0,
+                    "taxes": 0.0,
+                    "currency": "string",
+                    "uom": "string"
+                  }
+                ]
+              }
+            ],
+            "variablePrice": {
+              "total": 0.0,
+              "energy": 0.0,
+              "power": 0.0,
+              "taxes": 0.0,
+              "level": "string",
+              "currency": "string",
+              "uom": "string"
+            }
+          }
+        ]
+      }
+    }
+  }
+  

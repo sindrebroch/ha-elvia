@@ -1,0 +1,7 @@
+{
+    "name": "Elvia",
+    "hacs": "1.6.0",
+    "domains": ["sensor"],
+    "homeassistant": "2021.11.0",
+    "render_readme": true
+}
