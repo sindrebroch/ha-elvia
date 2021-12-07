@@ -1,0 +1,29 @@
+{
+  "config": {
+    "flow_title": "Elvia config",
+    "step": {
+      "user": {
+        "data": {
+          "api_key": "[%key:common::config_flow::data::api_key%]",
+          "metering_point_id": "[%key:common::config_flow::data::metering_point_id%]"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]"
+    },
+    "abort": {
+      "already_configured": "[%key:common::config_flow::abort::already_configured_service%]"
+    }
+  },
+  "options": {
+    "flow_title": "Elvia options",
+    "step": {
+      "init": {
+        "data": {
+          "update_interval": "Update interval in minutes"
+        }
+      }
+    }
+  }
+}

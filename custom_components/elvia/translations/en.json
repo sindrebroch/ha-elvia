@@ -1,0 +1,36 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Service is already configured"
+        },
+        "error": {
+            "cannot_connect": "Failed to connect"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "name": "Name",
+                    "api_key": "API key",
+                    "metering_point_id": "Metering Point ID"
+                }
+            }
+        },
+        "flow_title": "Elvia Config"
+    },
+    "options": {
+        "flow_title": "Elvia Options",
+        "abort": {
+            "already_configured": "Service is already configured"
+        },
+        "error": {
+            "cannot_connect": "Failed to connect"
+        },
+        "step": {
+            "init": {
+                "data": {
+                    "update_interval": "Update interval in minutes"
+                }
+            }
+        }
+    }
+}
