@@ -1,21 +1,22 @@
 {
     "config": {
+        "flow_title": "Elvia Config",
         "abort": {
-            "already_configured": "Service is already configured"
+            "already_configured": "Device is already configured"
         },
         "error": {
-            "cannot_connect": "Failed to connect"
+            "cannot_connect": "Failed to connect",
+            "invalid_auth": "Invalid authentication",
+            "unknown": "Unexpected error"
         },
         "step": {
             "user": {
                 "data": {
-                    "name": "Name",
-                    "api_key": "API key",
-                    "metering_point_id": "Metering Point ID"
+                    "api_key": "API-key",
+                    "metering_point_id": "Metering point ID"
                 }
             }
-        },
-        "flow_title": "Elvia Config"
+        }
     },
     "options": {
         "flow_title": "Elvia Options",

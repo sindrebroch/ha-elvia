@@ -1,11 +1,11 @@
 {
   "domain": "elvia",
   "name": "Elvia",
-  "documentation": "https://www.github.com/sindrebroch/ha-elvia",
+  "config_flow": true,
+  "documentation": "https://github.com/sindrebroch/ha-elvia",
+  "issue_tracker": "https://github.com/sindrebroch/ha-elvia/issues",
   "requirements": [],
   "codeowners": ["@sindrebroch"],
-  "issue_tracker": "https://github.com/sindrebroch/ha-elvia/issues",
-  "config_flow": true,
   "iot_class": "cloud_polling",
-  "version": "1.0.0"
+  "version": "0.1.0"
 }

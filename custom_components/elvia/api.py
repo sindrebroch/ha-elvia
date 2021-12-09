@@ -1,31 +1,42 @@
-"""Asynchronous Python client for Elvia."""
+"""Elvia library."""
 
-from typing import Any, Dict
+from http import HTTPStatus
+from typing import Any, Dict, List, Optional
 
-import socket
 import asyncio
-import urllib.parse
-import aiohttp
 import async_timeout
-from aiohttp.client import ClientSession
+import aiohttp
+import socket
 
-from .const import API_HEADERS, LOGGER, METERINGPOINT_PATH, PING_PATH, SECURE_PATH, TARIFFQUERY_PATH, TARIFFTYPE_PATH
-
+from .const import (
+    LOGGER,
+    PING_PATH,
+    SECURE_PATH,
+    TARIFFTYPES_PATH,
+    TARIFFQUERY_PATH,
+    METERINGPOINT_PATH,
+    API_HEADERS,
+)
+from .models import (
+    TariffType,
+    GridTariff,
+    GridTariffCollection,
+)
 
 class ApiClientException(Exception):
     """Api Client Exception."""
 
-
 class ElviaApiClient:
-    """Main class for handling connections with a Elvia unit."""
+    """Main class for handling connection with."""
 
     def __init__(
         self,
-        session: ClientSession,
         api_key: str,
-        metering_point_id: str
+        metering_point_id: str,
+        session: Optional[aiohttp.client.ClientSession] = None,
     ) -> None:
-        """Initialize connection with the Elvia."""
+        """Initialize connection with Elvia."""
+
         self._session = session
         self._api_key = api_key
         self._metering_point_id = metering_point_id
@@ -65,14 +76,27 @@ class ElviaApiClient:
         )
 
         try:
-            async with async_timeout.timeout(10, loop=asyncio.get_event_loop()):
+            async with async_timeout.timeout(10):
                 response = await self._session.request(
                     method=method,
                     url=url,
                     headers=headers,
                     data=data,
                 )
-                return await response.json()
+
+                # LOGGER.debug("response=%s", response)
+
+                status = response.status
+                if status == HTTPStatus.OK:
+                    LOGGER.debug("Status 200 OK")
+                elif status == HTTPStatus.UNAUTHORIZED: # TODO throw specialized exception
+                    LOGGER.debug("Status 401 Unauthorized")
+                elif status == HTTPStatus.FORBIDDEN: # TODO throw specialized exception
+                    LOGGER.debug("Status 403 Forbidden")
+                else:
+                    LOGGER.debug("Status=%s", status)
+
+                return await response.json() # TODO does not handle requests without body?
         except asyncio.TimeoutError as exception:
             raise ApiClientException(
                 f"Timeout error fetching information from {url}"
@@ -90,23 +114,26 @@ class ElviaApiClient:
 
     async def ping(self) -> bool:
         """Ping endpoint."""
-        return await self.get(PING_PATH)
+        await self.get(PING_PATH)
+        return True
 
     async def secure(self) -> bool:
         """Secure endpoint."""
         return await self.get(SECURE_PATH)
 
-    async def tariff_type(self):
+    async def tarifftypes(self) -> List[TariffType]:
         """Get all available private tariff types."""
-        return await self.get(TARIFFTYPE_PATH)
+        return (TariffType.from_dict(tariffType) for tariffType in await self.get(TARIFFTYPES_PATH)["tariffKey"])
 
-    async def tariff_query(self):
+    async def tariffquery(self) -> GridTariff:
         """Get tariff data/prices for a given tariff for a given timeperiod."""
-        return await self.get(TARIFFQUERY_PATH)
+        return GridTariff.from_dict(await self.get(TARIFFQUERY_PATH))
 
-    async def meteringpoint(self):
+    async def meteringpoint(self) -> GridTariffCollection:
         """Returns tariff(s) and MPID(s) for the MPIDs(MeteringpointId/Målepunkt-Id) given as input."""
-        return await self.post(METERINGPOINT_PATH)
+        response = await self.post(METERINGPOINT_PATH, '{ "meteringPointIds": [ "' + str(self._metering_point_id) + '" ] }')
+        for collection in response["gridTariffCollections"]:
+            return GridTariffCollection.from_dict(collection)
 
     def headers_with_api_key(self) -> Dict[str, str]:
         """Get headers with api_key added."""
