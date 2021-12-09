@@ -1,4 +1,4 @@
-# Elvia for HomeAssistant
+# [WIP] Elvia for HomeAssistant
 
 HomeAssistant-integration for Elvia 
 
