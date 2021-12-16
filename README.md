@@ -3,7 +3,24 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/sindrebroch/ha-elvia?style=flat-square)
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 
-HomeAssistant-integration for Elvia 
+HomeAssistant-integration for Elvia
+
+*Work in progress*
+
+## Features
+### Fixed price
+- Fixed
+- Taxes
+- Total
+- Level
+- Level Info
+
+### Variable price
+- Energy
+- Level
+- Power
+- Taxes
+- Total
 
 ## Requirements
 
