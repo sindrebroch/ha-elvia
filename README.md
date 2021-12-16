@@ -1,4 +1,4 @@
-# [WIP] Elvia for HomeAssistant
+# Elvia for HomeAssistant
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/sindrebroch/ha-elvia?style=flat-square)
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
