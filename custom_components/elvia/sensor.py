@@ -17,33 +17,28 @@ from .coordinator import ElviaDataUpdateCoordinator
 FIXED_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key="fixed_price_level",
-        name="Fixed price level",
-        icon="mdi:currency-usd",
-    ),
-    SensorEntityDescription(
-        key="fixed_price_levelInfo",
-        name="Fixed price levelInfo",
+        name="Price fixed level",
         icon="mdi:currency-usd",
     ),
 )
 FIXED_PRICE_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key="fixed_price_total",
-        name="Fixed price total",
+        name="Price fixed total",
         icon="mdi:currency-usd",
         device_class=SensorDeviceClass.MONETARY,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
         key="fixed_price_fixed",
-        name="Fixed price fixed",
+        name="Price fixed",
         icon="mdi:currency-usd",
         device_class=SensorDeviceClass.MONETARY,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
         key="fixed_price_taxes",
-        name="Fixed price taxes",
+        name="Price fixed taxes",
         icon="mdi:currency-usd",
         device_class=SensorDeviceClass.MONETARY,
         state_class=SensorStateClass.MEASUREMENT,
@@ -53,38 +48,38 @@ FIXED_PRICE_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
 VARIABLE_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key="variable_price_power",
-        name="Variable price power",
+        name="Price variable power",
         icon="mdi:currency-usd",
         device_class=SensorDeviceClass.POWER,
     ),
     SensorEntityDescription(
-        key="variable_price_energy",
-        name="Variable price energy",
-        icon="mdi:currency-usd",
-        state_class=SensorStateClass.TOTAL,
-        device_class=SensorDeviceClass.ENERGY,
-    ),
-    SensorEntityDescription(
         key="variable_price_level",
-        name="Variable price level",
+        name="Price variable level",
         icon="mdi:currency-usd",
     ),
 )
 VARIABLE_PRICE_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key="variable_price_total",
-        name="Variable price total",
+        name="Price variable total",
         icon="mdi:currency-usd",
         device_class=SensorDeviceClass.MONETARY,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
         key="variable_price_taxes",
-        name="Variable price taxes",
+        name="Price variable taxes",
         icon="mdi:currency-usd",
         device_class=SensorDeviceClass.MONETARY,
         state_class=SensorStateClass.MEASUREMENT,
-    )
+    ),
+    SensorEntityDescription(
+        key="variable_price_energy",
+        name="Price variable energy",
+        icon="mdi:currency-usd",
+        state_class=SensorStateClass.TOTAL,
+        device_class=SensorDeviceClass.ENERGY,
+    ),
 )
 
 async def async_setup_entry(
