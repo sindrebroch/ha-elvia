@@ -17,7 +17,7 @@ from .coordinator import ElviaDataUpdateCoordinator
 FIXED_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key="fixed_price_level",
-        name="Price fixed level",
+        name="Fixed pricelevel",
         icon="mdi:currency-usd",
     ),
 )
@@ -48,13 +48,13 @@ FIXED_PRICE_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
 VARIABLE_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key="variable_price_power",
-        name="Price variable power",
+        name="Variable power",
         icon="mdi:currency-usd",
         device_class=SensorDeviceClass.POWER,
     ),
     SensorEntityDescription(
         key="variable_price_level",
-        name="Price variable level",
+        name="Variable pricelevel",
         icon="mdi:currency-usd",
     ),
 )
