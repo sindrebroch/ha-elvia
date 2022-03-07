@@ -77,8 +77,8 @@ VARIABLE_PRICE_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
         key="variable_price_energy",
         name="Price variable energy",
         icon="mdi:currency-usd",
-        state_class=SensorStateClass.TOTAL,
-        device_class=SensorDeviceClass.ENERGY,
+        device_class=SensorDeviceClass.MONETARY,
+        state_class=SensorStateClass.MEASUREMENT,
     ),
 )
 
