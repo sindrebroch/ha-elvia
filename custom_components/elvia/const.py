@@ -22,6 +22,7 @@ API_HEADERS = {
 PING_PATH = f"{API_URL}/Ping"  # GET
 SECURE_PATH = f"{API_URL}/Secure"  # GET
 TARIFFTYPES_PATH = f"{API_URL}/digin/api/1/tarifftype"  # GET - {v}
+# TODO add tariffKey and range
 TARIFFQUERY_PATH = f"{API_URL}/digin/api/1/tariffquery"  # ?TariffKey={TariffKey}[&Range][&StartTime][&EndTime]" # GET
 METERINGPOINT_PATH = (
     f"{API_URL}/digin/api/1/tariffquery/meteringpointsgridtariffs"  # POST

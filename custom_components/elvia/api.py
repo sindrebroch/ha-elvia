@@ -137,6 +137,8 @@ class ElviaApiClient:
 
     async def meteringpoint(self) -> GridTariffCollection:
         """Returns tariff(s) and MPID(s) for the MPIDs(MeteringpointId/Målepunkt-Id) given as input."""
+        # TODO fix json-handling
+        # TODO add range or starttime/endtime
         response = await self.post(
             METERINGPOINT_PATH,
             '{ "meteringPointIds": [ "' + str(self._metering_point_id) + '" ] }',
