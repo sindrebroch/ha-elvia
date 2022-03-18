@@ -23,8 +23,10 @@ from .models import (
     GridTariffCollection,
 )
 
+
 class ApiClientException(Exception):
     """Api Client Exception."""
+
 
 class ElviaApiClient:
     """Main class for handling connection with."""
@@ -49,13 +51,10 @@ class ElviaApiClient:
             headers=self.headers_with_api_key(),
         )
 
-    async def post(self, url: str, data: dict[str, Any]= {}) -> Any:
+    async def post(self, url: str, data: dict[str, Any] = {}) -> Any:
         """Post request."""
         return await self.api_wrapper(
-            method="POST",
-            url=url,
-            headers=self.headers_with_api_key(),
-            data=data
+            method="POST", url=url, headers=self.headers_with_api_key(), data=data
         )
 
     async def api_wrapper(
@@ -89,14 +88,18 @@ class ElviaApiClient:
                 status = response.status
                 if status == HTTPStatus.OK:
                     LOGGER.debug("Status 200 OK")
-                elif status == HTTPStatus.UNAUTHORIZED: # TODO throw specialized exception
+                elif (
+                    status == HTTPStatus.UNAUTHORIZED
+                ):  # TODO throw specialized exception
                     LOGGER.debug("Status 401 Unauthorized")
-                elif status == HTTPStatus.FORBIDDEN: # TODO throw specialized exception
+                elif status == HTTPStatus.FORBIDDEN:  # TODO throw specialized exception
                     LOGGER.debug("Status 403 Forbidden")
                 else:
                     LOGGER.debug("Status=%s", status)
 
-                return await response.json() # TODO does not handle requests without body?
+                return (
+                    await response.json()
+                )  # TODO does not handle requests without body?
         except asyncio.TimeoutError as exception:
             raise ApiClientException(
                 f"Timeout error fetching information from {url}"
@@ -123,7 +126,10 @@ class ElviaApiClient:
 
     async def tarifftypes(self) -> List[TariffType]:
         """Get all available private tariff types."""
-        return (TariffType.from_dict(tariffType) for tariffType in await self.get(TARIFFTYPES_PATH)["tariffKey"])
+        return (
+            TariffType.from_dict(tariffType)
+            for tariffType in await self.get(TARIFFTYPES_PATH)["tariffKey"]
+        )
 
     async def tariffquery(self) -> GridTariff:
         """Get tariff data/prices for a given tariff for a given timeperiod."""
@@ -131,11 +137,14 @@ class ElviaApiClient:
 
     async def meteringpoint(self) -> GridTariffCollection:
         """Returns tariff(s) and MPID(s) for the MPIDs(MeteringpointId/Målepunkt-Id) given as input."""
-        response = await self.post(METERINGPOINT_PATH, '{ "meteringPointIds": [ "' + str(self._metering_point_id) + '" ] }')
+        response = await self.post(
+            METERINGPOINT_PATH,
+            '{ "meteringPointIds": [ "' + str(self._metering_point_id) + '" ] }',
+        )
         for collection in response["gridTariffCollections"]:
             return GridTariffCollection.from_dict(collection)
 
     def headers_with_api_key(self) -> Dict[str, str]:
         """Get headers with api_key added."""
         assert self._api_key is not None
-        return {**API_HEADERS, **{"Ocp-Apim-Subscription-Key": f"{self._api_key}"}}
+        return {**API_HEADERS, **{"X-API-Key": f"{self._api_key}"}}
