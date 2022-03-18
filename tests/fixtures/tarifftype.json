@@ -1,12 +1,31 @@
 {
-    "tariffTypes": [
-      {
-        "tariffKey": "string",
-        "company": "string",
-        "customerType": "string",
-        "title": "string",
-        "resolution": 0,
-        "description": "string"
-      }
-    ]
-  }
+  "tariffTypes": [
+    {
+      "tariffKey": "string",
+      "product": "string",
+      "companyName": "string",
+      "companyOrgNo": "string",
+      "title": "string",
+      "consumptionFlag": true,
+      "lastUpdated": "string",
+      "usePublicHolidayPrices": true,
+      "useWeekendPrices": true,
+      "fixedPriceConfiguration": {
+        "basis": "string",
+        "maxhoursPerDay": 0,
+        "daysPerMonth": 0,
+        "allDaysPerMonth": true,
+        "maxhoursPerMonth": 0,
+        "months": 0,
+        "additionalProperties": {}
+      },
+      "powerPriceConfiguration": {
+        "reactivePowerPricing": true,
+        "powerFactorPercentage": 0.0,
+        "additionalProperties": {}
+      },
+      "resolution": 0,
+      "description": "string"
+    }
+  ]
+}

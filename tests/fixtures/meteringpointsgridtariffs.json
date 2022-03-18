@@ -1,54 +1,163 @@
 {
-    "gridTariffCollections": [
-      {
-        "gridTariff": {
-          "tariffType": {
-            "tariffKey": "string",
-            "company": "string",
-            "customerType": "string",
-            "title": "string",
-            "resolution": 0,
-            "description": "string"
+  "gridTariffCollections": [
+    {
+      "gridTariff": {
+        "tariffType": {
+          "tariffKey": "string",
+          "product": "string",
+          "companyName": "string",
+          "companyOrgNo": "string",
+          "title": "string",
+          "consumptionFlag": true,
+          "lastUpdated": "string",
+          "usePublicHolidayPrices": true,
+          "useWeekendPrices": true,
+          "fixedPriceConfiguration": {
+            "basis": "string",
+            "maxhoursPerDay": 0,
+            "daysPerMonth": 0,
+            "allDaysPerMonth": true,
+            "maxhoursPerMonth": 0,
+            "months": 0,
+            "additionalProperties": {}
           },
-          "tariffPrice": {
-            "priceInfo": [
+          "powerPriceConfiguration": {
+            "reactivePowerPricing": true,
+            "powerFactorPercentage": 0.0,
+            "additionalProperties": {}
+          },
+          "resolution": 0,
+          "description": "string"
+        },
+        "tariffPrice": {
+          "hours": [
+            {
+              "startTime": "string",
+              "expiredAt": "string",
+              "shortName": "string",
+              "isPublicHoliday": true,
+              "fixedPrice": {
+                "id": "string",
+                "hourId": "string"
+              },
+              "powerPrice": {
+                "id": "string",
+                "hourId": "string"
+              },
+              "energyPrice": {
+                "id": "string",
+                "total": 0.0,
+                "totalExVat": 0.0
+              }
+            }
+          ],
+          "priceInfo": {
+            "fixedPrices": [
               {
-                "startTime": "string",
-                "expiredAt": "string",
-                "hoursShortName": "string",
-                "season": "string",
-                "publicHoliday": true,
-                "fixedPrices": [
+                "id": "string",
+                "startDate": "string",
+                "endDate": "string",
+                "priceLevels": [
                   {
-                    "priceLevel": [
+                    "id": "string",
+                    "valueMin": 0.0,
+                    "valueMax": 0.0,
+                    "nextIdDown": "string",
+                    "nextIdUp": "string",
+                    "valueUnitOfMeasure": "string",
+                    "monthlyTotal": 0.0,
+                    "monthlyTotalExVat": 0.0,
+                    "monthlyExTaxes": 0.0,
+                    "monthlyTaxes": 0.0,
+                    "monthlyUnitOfMeasure": "string",
+                    "hourPrices": [
                       {
-                        "level": "string",
-                        "levelInfo": "string",
+                        "id": "string",
+                        "numberOfDaysInMonth": 0,
                         "total": 0.0,
-                        "fixed": 0.0,
-                        "taxes": 0.0,
-                        "currency": "string",
-                        "uom": "string"
+                        "totalExVat": 0.0
                       }
-                    ]
+                    ],
+                    "levelInfo": "string",
+                    "currency": "string",
+                    "monetaryUnitOfMeasure": "string"
                   }
-                ],
-                "variablePrice": {
-                  "total": 0.0,
-                  "energy": 0.0,
-                  "power": 0.0,
-                  "taxes": 0.0,
-                  "level": "string",
-                  "currency": "string",
-                  "uom": "string"
-                }
+                ]
+              }
+            ],
+            "powerPrices": [
+              {
+                "id": "string",
+                "startDate": "string",
+                "endDate": "string",
+                "priceLevels": [
+                  {
+                    "id": "string",
+                    "valueMin": 0.0,
+                    "valueMax": 0.0,
+                    "nextIdDown": "string",
+                    "nextIdUp": "string",
+                    "valueUnitOfMeasure": "string",
+                    "monthlyActivePowerTotal": 0.0,
+                    "monthlyActivePowerTotalExVat": 0.0,
+                    "monthlyActivePowerExTaxes": 0.0,
+                    "monthlyActivePowerTaxes": 0.0,
+                    "monthlyReactivePowerTotal": 0.0,
+                    "monthlyReactivePowerTotalExVat": 0.0,
+                    "monthlyReactivePowerExTaxes": 0.0,
+                    "monthlyReactivePowerTaxes": 0.0,
+                    "monthlyUnitOfMeasure": "string",
+                    "hourPrices": [
+                      {
+                        "id": "string",
+                        "numberOfDaysInMonth": 0,
+                        "activeTotal": 0.0,
+                        "activeTotalExVat": 0.0,
+                        "reactiveTotal": 0.0,
+                        "reactiveTotalExVat": 0.0
+                      }
+                    ],
+                    "levelInfo": "string",
+                    "currency": "string",
+                    "monetaryUnitOfMeasure": "string"
+                  }
+                ]
+              }
+            ],
+            "energyPrices": [
+              {
+                "id": "string",
+                "startDate": "string",
+                "endDate": "string",
+                "season": "string",
+                "level": "string",
+                "total": 0.0,
+                "totalExVat": 0.0,
+                "energyExTaxes": 0.0,
+                "taxes": 0.0,
+                "currency": "string",
+                "monetaryUnitOfMeasure": "string"
               }
             ]
           }
-        },
-        "meteringPointIds": [
-          "string"
-        ]
-      }
-    ]
-  }
+        }
+      },
+      "meteringPointsAndPriceLevels": [
+        {
+          "currentFixedPriceLevel": {
+            "id": "string",
+            "levelId": "string"
+          },
+          "meteringPoints": [
+            {
+              "meteringPointId": "string",
+              "levelValue": 0.0,
+              "lastUpdated": "string"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "additionalProperties": {}
+}
