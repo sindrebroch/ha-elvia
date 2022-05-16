@@ -14,71 +14,10 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN, LOGGER
 from .coordinator import ElviaDataUpdateCoordinator
 
-FIXED_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
+SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
-        key="fixed_price_level",
-        name="Price level fixed",
-        icon="mdi:currency-usd",
-    ),
-)
-FIXED_PRICE_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
-    SensorEntityDescription(
-        key="fixed_price_total",
-        name="Price fixed total",
-        icon="mdi:currency-usd",
-        device_class=SensorDeviceClass.MONETARY,
-        state_class=SensorStateClass.MEASUREMENT,
-    ),
-    SensorEntityDescription(
-        key="fixed_price_fixed",
-        name="Price fixed",
-        icon="mdi:currency-usd",
-        device_class=SensorDeviceClass.MONETARY,
-        state_class=SensorStateClass.MEASUREMENT,
-    ),
-    SensorEntityDescription(
-        key="fixed_price_taxes",
-        name="Price fixed taxes",
-        icon="mdi:currency-usd",
-        device_class=SensorDeviceClass.MONETARY,
-        state_class=SensorStateClass.MEASUREMENT,
-    ),
-)
-
-VARIABLE_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
-    SensorEntityDescription(
-        key="variable_price_power",
-        name="Power variable",
-        icon="mdi:currency-usd",
-        device_class=SensorDeviceClass.POWER,
-    ),
-    SensorEntityDescription(
-        key="variable_price_level",
-        name="Price level variable",
-        icon="mdi:currency-usd",
-    ),
-)
-VARIABLE_PRICE_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
-    SensorEntityDescription(
-        key="variable_price_total",
-        name="Price variable total",
-        icon="mdi:currency-usd",
-        device_class=SensorDeviceClass.MONETARY,
-        state_class=SensorStateClass.MEASUREMENT,
-    ),
-    SensorEntityDescription(
-        key="variable_price_taxes",
-        name="Price variable taxes",
-        icon="mdi:currency-usd",
-        device_class=SensorDeviceClass.MONETARY,
-        state_class=SensorStateClass.MEASUREMENT,
-    ),
-    SensorEntityDescription(
-        key="variable_price_energy",
-        name="Price variable energy",
-        icon="mdi:currency-usd",
-        device_class=SensorDeviceClass.MONETARY,
-        state_class=SensorStateClass.MEASUREMENT,
+        key="test",
+        name="Test sensor",
     ),
 )
 
@@ -90,12 +29,8 @@ async def async_setup_entry(
     """Add sensor entities from a config_entry."""
 
     coordinator: ElviaDataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id]
-    
-    async_add_entities(ElviaFixedPriceSensor(coordinator, description) for description in FIXED_PRICE_SENSORS)
-    async_add_entities(ElviaFixedPricePriceSensor(coordinator, description) for description in FIXED_PRICE_PRICE_SENSORS)
-    async_add_entities(ElviaVariablePriceSensor(coordinator, description) for description in VARIABLE_PRICE_SENSORS)
-    async_add_entities(ElviaVariablePricePriceSensor(coordinator, description) for description in VARIABLE_PRICE_PRICE_SENSORS)
 
+    async_add_entities(ElviaSensor(coordinator, description) for description in SENSORS)
 
 class ElviaSensor(CoordinatorEntity, SensorEntity):
     """Define a Elvia entity."""
@@ -132,51 +67,3 @@ class ElviaSensor(CoordinatorEntity, SensorEntity):
 
         self.update_from_data()
         super()._handle_coordinator_update()
-
-class ElviaVariablePriceSensor(ElviaSensor):
-
-    def update_from_data(self) -> None:
-        key = self.entity_description.key
-        variablePrice = self.coordinator.variablePrice
-        attribute = key.replace("variable_price_", "")
-
-        self.sensor_data = variablePrice.__getattribute__(attribute)
-
-class ElviaVariablePricePriceSensor(ElviaSensor):
-
-    def update_from_data(self) -> None:
-        key = self.entity_description.key
-        variablePrice = self.coordinator.variablePrice
-        attribute = key.replace("variable_price_", "")
-
-        self.sensor_data = float(variablePrice.__getattribute__(attribute))
-
-    @property
-    def native_unit_of_measurement(self) -> str or None:
-        """Return the unit of measurement of the sensor, if any."""
-        return self.coordinator.variablePrice.uom
-
-class ElviaFixedPriceSensor(ElviaSensor):
-
-    def update_from_data(self) -> None:
-        key = self.entity_description.key
-        priceLevel = self.coordinator.fixedPriceLevel
-        attribute = key.replace("fixed_price_", "")
-
-        self.sensor_data = priceLevel.__getattribute__(attribute)
-
-class ElviaFixedPricePriceSensor(ElviaSensor):
-
-    def update_from_data(self) -> None:
-
-        key = self.entity_description.key
-        priceLevel = self.coordinator.fixedPriceLevel
-        attribute = key.replace("fixed_price_", "")
-
-        self.sensor_data = float(priceLevel.__getattribute__(attribute))
-
-    @property
-    def native_unit_of_measurement(self) -> str or None:
-        """Return the unit of measurement of the sensor, if any."""
-
-        return self.coordinator.fixedPriceLevel.uom

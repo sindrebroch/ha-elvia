@@ -11,18 +11,15 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .api import ElviaApiClient
 from .const import DATE_FORMAT, DOMAIN, LOGGER
-from .models import GridTariffCollection, TariffType, PriceInfo, PriceLevel, VariablePrice
+from .models import GridTariffCollection, TariffType
 
 class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching from Elvia data API."""
-    
+
     nextFetch: datetime
 
     data: GridTariffCollection
-    hourlyPriceInfo: PriceInfo
-    fixedPriceLevel: PriceLevel
-    variablePrice: VariablePrice
-    
+
     def __init__(
         self,
         hass: HomeAssistant,
@@ -38,7 +35,7 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
 
         self._attr_device_info = DeviceInfo(
             name=self.device_info.title,
-            manufacturer=self.device_info.company,
+            manufacturer=self.device_info.companyName,
             model=self.device_info.tariffKey,
             identifiers={(DOMAIN, self.api._metering_point_id)},
             configuration_url="https://www.elvia.no/logg-inn/",
@@ -54,44 +51,8 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self) -> GridTariffCollection:
         """Update data via library."""
 
-        now = datetime.now()
-
-        if self.nextFetch is None or self.nextFetch < now:
-            return self.data
-
         try:
-            meteringpoint = await self.api.meteringpoint()
-
-            for hourlyPriceInfo in meteringpoint.gridTariff.tariffPrice.priceInfo:
-
-                start = datetime.strptime(hourlyPriceInfo.startTime[0:19], DATE_FORMAT)
-                end = datetime.strptime(hourlyPriceInfo.expiredAt[0:19], DATE_FORMAT)
-
-                if (now < start) and (now > end):
-                    continue
-
-                self.hourlyPriceInfo = hourlyPriceInfo
-                
-                for fixedPrice in hourlyPriceInfo.fixedPrices:      # TODO handle multiple?
-                    for priceLevel in fixedPrice.priceLevels:       # TODO handle multiple?
-                        self.fixedPriceLevel = priceLevel
-
-                self.variablePrice = hourlyPriceInfo.variablePrice
-                self.nextFetch = now + timedelta(hours=1) # TODO be more specific to refresh at new hour
-
-            return meteringpoint
+            return await self.api.meteringpoint()
         except (Error, ClientConnectorError) as error:
             LOGGER.error("Update error %s", error)
             raise UpdateFailed(error) from error
-
-        ## priceinfo -- list
-        # startTime: str
-        # expiredAt: str
-        # hoursShortName: str
-        # season: str
-        # publicHoliday: bool
-        # fixedPrices: List[FixedPrices]
-        # variablePrice: VariablePrice
-
-        ## fixedprices
-        # priceLevel: List[PriceLevel]
