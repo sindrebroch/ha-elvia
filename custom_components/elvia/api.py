@@ -141,7 +141,7 @@ class ElviaApiClient:
         # TODO add range or starttime/endtime
         response = await self.post(
             METERINGPOINT_PATH,
-            '{ "meteringPointIds": [ "' + str(self._metering_point_id) + '" ] }',
+            '{ "range": "today", "meteringPointIds": [ "' + str(self._metering_point_id) + '" ] }',
         )
         for collection in response["gridTariffCollections"]:
             return GridTariffCollection.from_dict(collection)
