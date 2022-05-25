@@ -20,10 +20,10 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
 
     data: GridTariffCollection
 
-    tariffType: TariffType | None = None
-    priceLevel: PriceLevel | None = None
-    hourPrice: HourPrice | None = None
-    energyPrice: EnergyPrice | None = None
+    tariffType: TariffType or None = None
+    priceLevel: PriceLevel or None = None
+    hourPrice: HourPrice or None = None
+    energyPrice: EnergyPrice or None = None
 
     def __init__(
         self,
