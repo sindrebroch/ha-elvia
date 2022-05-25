@@ -77,6 +77,7 @@ class TariffType:
             description=data["description"],
         )
 
+@attr.s(auto_attribs=True)
 class HourPrice:
 
     id: str
@@ -305,7 +306,7 @@ class Hour:
 class TariffPrice:
 
     hours: List[Hour]
-    priceInfo: List[PriceInfo]
+    priceInfo: PriceInfo
 
     def to_json(self):
         return "TariffType"
@@ -318,7 +319,7 @@ class TariffPrice:
 
         return TariffPrice(
             hours=(Hour.from_dict(hour) for hour in data["hours"]),
-            priceInfo=(PriceInfo.from_dict(info) for info in data["priceInfo"]),
+            priceInfo=PriceInfo.from_dict(data["priceInfo"]),
         )
 
 @attr.s(auto_attribs=True)
