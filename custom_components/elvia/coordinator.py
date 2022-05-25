@@ -11,7 +11,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .api import ElviaApiClient
 from .const import DATE_FORMAT, DOMAIN, LOGGER
-from .models import GridTariffCollection, TariffType
+from .models import EnergyPrice, GridTariffCollection, HourPrice, PriceLevel, TariffType
 
 class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching from Elvia data API."""
@@ -19,6 +19,11 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
     nextFetch: datetime
 
     data: GridTariffCollection
+
+    tariffType: TariffType | None = None
+    priceLevel: PriceLevel | None = None
+    hourPrice: HourPrice | None = None
+    energyPrice: EnergyPrice | None = None
 
     def __init__(
         self,
@@ -52,7 +57,19 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
         """Update data via library."""
 
         try:
-            return await self.api.meteringpoint()
+            response = await self.api.meteringpoint()
+            await self.mapValues(response)
+            return response
         except (Error, ClientConnectorError) as error:
             LOGGER.error("Update error %s", error)
             raise UpdateFailed(error) from error
+
+    async def mapValues(self, data) -> None:
+        self.tariffType = data.gridTariff.tariffType
+        for fixedPrice in data.gridTariff.tariffPrice.priceInfo.fixedPrices:
+            for priceLevel in fixedPrice.priceLevels:
+                self.priceLevel = priceLevel
+                for hourPrice in self.priceLevel.hourPrices:
+                    self.hourPrice = hourPrice
+        for energyPrice in data.gridTariff.tariffPrice.priceInfo.energyPrices:
+            self.energyPrice = energyPrice

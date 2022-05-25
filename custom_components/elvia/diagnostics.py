@@ -25,7 +25,6 @@ async def async_get_config_entry_diagnostics(
 
     diagnostics["tariffPrice"] = json.dumps(data.gridTariff.tariffPrice, default=str)
     diagnostics["tariffType"] = json.dumps(data.gridTariff.tariffType, default=str)
-
     diagnostics["meteringPointsAndPriceLevels"] = json.dumps(data.meteringPointsAndPriceLevels, default=str)
 
     return diagnostics

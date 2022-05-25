@@ -97,9 +97,8 @@ class ElviaApiClient:
                 else:
                     LOGGER.debug("Status=%s", status)
 
-                return (
-                    await response.json()
-                )  # TODO does not handle requests without body?
+                return await response.json()
+
         except asyncio.TimeoutError as exception:
             raise ApiClientException(
                 f"Timeout error fetching information from {url}"
