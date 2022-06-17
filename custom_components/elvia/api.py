@@ -142,7 +142,7 @@ class ElviaApiClient:
         tomorrow = today + timedelta(days=1)
         response = await self.post(
             METERINGPOINT_PATH,
-            '{ "startTime": "' + today + 'T00:00:00", "endTime": "' + tomorrow + 'T00:00:00", "meteringPointIds": [ "' + str(self._metering_point_id) + '" ] }',
+            '{ "startTime": "' + str(today) + 'T00:00:00", "endTime": "' + str(tomorrow) + 'T00:00:00", "meteringPointIds": [ "' + str(self._metering_point_id) + '" ] }',
         )
         for collection in response["gridTariffCollections"]:
             return GridTariffCollection.from_dict(collection)
