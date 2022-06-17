@@ -8,6 +8,8 @@ import async_timeout
 import aiohttp
 import socket
 
+from datetime import timedelta, date
+
 from .const import (
     LOGGER,
     PING_PATH,
@@ -136,11 +138,11 @@ class ElviaApiClient:
 
     async def meteringpoint(self) -> GridTariffCollection:
         """Returns tariff(s) and MPID(s) for the MPIDs(MeteringpointId/Målepunkt-Id) given as input."""
-        # TODO fix json-handling
-        # TODO add range or starttime/endtime
+        today = date.today()
+        tomorrow = today + timedelta(days=1)
         response = await self.post(
             METERINGPOINT_PATH,
-            '{ "range": "today", "meteringPointIds": [ "' + str(self._metering_point_id) + '" ] }',
+            '{ "startTime": "' + today + 'T00:00:00", "endTime": "' + tomorrow + 'T00:00:00", "meteringPointIds": [ "' + str(self._metering_point_id) + '" ] }',
         )
         for collection in response["gridTariffCollections"]:
             return GridTariffCollection.from_dict(collection)
