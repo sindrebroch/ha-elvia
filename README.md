@@ -9,6 +9,8 @@ HomeAssistant-integration for Elvia
 
 *Work in progress*
 
+**The API returns 500 Internal Server Error for dates after 2022.06.01 for me, but you are free to check for yourself**
+
 ## Requirements
 
 - Metering point id. Log into [Elvia](https://www.elvia.no/minside) and find your ID.
