@@ -7,6 +7,8 @@
 
 HomeAssistant-integration for Elvia
 
+**_PS: Prices are not correct at the moment_**
+
 ## Requirements
 
 - Metering point id. Log into [Elvia](https://www.elvia.no/minside) and find your ID.
