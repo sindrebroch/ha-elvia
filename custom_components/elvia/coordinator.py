@@ -68,8 +68,10 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
         self.tariffType = data.gridTariff.tariffType
         for fixedPrice in data.gridTariff.tariffPrice.priceInfo.fixedPrices:
             for priceLevel in fixedPrice.priceLevels:
+                LOGGER.warning("priceLevel %s", priceLevel)
                 self.priceLevel = priceLevel
                 for hourPrice in self.priceLevel.hourPrices:
+                    LOGGER.warning("Hourprice %s", hourPrice)
                     self.hourPrice = hourPrice
         for energyPrice in data.gridTariff.tariffPrice.priceInfo.energyPrices:
             self.energyPrice = energyPrice
