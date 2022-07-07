@@ -18,6 +18,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 API_URL: str = f"https://elvia.azure-api.net/grid-tariff"
 API_HEADERS = {
     "Content-Type": "application/json",
+    "Cache-Control": "no-cache",
 }
 PING_PATH = f"{API_URL}/Ping"  # GET
 SECURE_PATH = f"{API_URL}/Secure"  # GET
