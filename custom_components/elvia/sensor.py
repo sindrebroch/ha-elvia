@@ -13,10 +13,10 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, LOGGER, TARIFFTYPES_PATH
+from .const import DOMAIN
 from .coordinator import ElviaDataUpdateCoordinator
 
-NEW_SENSORS: tuple[SensorEntityDescription, ...] = (
+SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key="forbruksledd",
         name="Forbruksledd per kWh",
@@ -31,6 +31,10 @@ NEW_SENSORS: tuple[SensorEntityDescription, ...] = (
         unit_of_measurement="NOK/h",
         state_class=SensorStateClass.MEASUREMENT,
     ),
+    SensorEntityDescription(
+        key="level_info",
+        name="Fixed price level info",
+    ),
 )
 
 
@@ -44,8 +48,8 @@ async def async_setup_entry(
     coordinator: ElviaDataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id]
 
     async_add_entities(
-        ElviaCoordinatorSensor(coordinator, description, "")
-        for description in NEW_SENSORS
+        ElviaCoordinatorSensor(coordinator, description, "elvia")
+        for description in SENSORS
     )
 
 

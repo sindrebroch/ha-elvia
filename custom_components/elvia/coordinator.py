@@ -29,6 +29,7 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
 
     forbruksledd: float or None = None
     kapasitetsledd: float or None = None
+    level_info: str or None = None
 
     def __init__(
         self,
@@ -74,6 +75,8 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
 
         current_datetime = datetime.now()
 
+        zoneadjust = "+02:00" if localtime().tm_isdst > 0 else "+01:00"
+
         pretty_now = (
             str(current_datetime.year)
             + "-"
@@ -86,9 +89,7 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
             + str(current_datetime.minute).zfill(2)
             + ":"
             + str(current_datetime.second).zfill(2)
-            + "+02:00"
-            if localtime().tm_isdst > 0
-            else "+01:00"
+            + zoneadjust
         )
 
         today_string = (
@@ -122,10 +123,14 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
                                 if price_levels_element.id == fixed_price_level_id:
                                     hour_prices = next(price_levels_element.hourPrices)
                                     fixed_price_per_hour = hour_prices.total
+                                    fixed_price_level_info = (
+                                        price_levels_element.levelInfo
+                                    )
                                     for_loop_break = True
                                     break
-                            if for_loop_break == True:
+                            if for_loop_break is True:
+                                LOGGER.warning("%s", fixed_price_per_hour)
+                                self.kapasitetsledd = fixed_price_per_hour
+                                self.forbruksledd = variable_price_per_hour
+                                self.level_info = fixed_price_level_info
                                 break
-
-        self.kapasitetsledd = fixed_price_per_hour
-        self.forbruksledd = variable_price_per_hour
