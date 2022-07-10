@@ -7,8 +7,6 @@
 
 HomeAssistant-integration for Elvia
 
-**_PS: Prices are not correct at the moment_**
-
 ## Requirements
 
 - Metering point id. Log into [Elvia](https://www.elvia.no/minside) and find your ID.
@@ -40,41 +38,9 @@ HomeAssistant-integration for Elvia
 
 
 ## Sensors
+- Kapasitetsledd
+- Forbruksledd
 
-## Tariff type
-- tariffKey
-- product
-- companyName
-- title
-- consumptionFlag
-- lastUpdated
-- usePublicHolidayPrices
-- useWeekendPrices
-- resolution
-
-## Fixed price
-- monthlyTotal
-- monthlyTotalExVat
-- monthlyExTaxes
-- monthlyTaxes
-- monthlyUnitOfMeasure
-- levelInfo
-- currency
-- monetaryUnitOfMeasure
-
-## Fixed price hour
-- total
-- totalExVat
-
-## Energy price
-- season
-- level
-- total
-- totalExVat
-- energyExTaxes
-- taxes
-- currency
-- monetaryUnitOfMeasure
 
 ## Debugging
 If something is not working properly, logs might help with debugging. To turn on debug-logging add this to your `configuration.yaml`
@@ -87,3 +53,6 @@ logger:
 
 ## API limitations
 Limited to 200 calls/hour/user. The integration normally polls once every hour.
+
+## Inspiration
+https://github.com/uphillbattle/NettleieElvia
