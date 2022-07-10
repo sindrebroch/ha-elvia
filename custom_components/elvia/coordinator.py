@@ -1,5 +1,6 @@
 """Elvia data coordinator."""
 
+from time import localtime
 from datetime import timedelta, datetime
 
 from aiohttp.client_exceptions import ClientConnectorError
@@ -10,13 +11,14 @@ from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import ElviaApiClient
-from .const import DATE_FORMAT, DOMAIN, LOGGER
+from .const import DOMAIN, LOGGER
 from .models import EnergyPrice, GridTariffCollection, HourPrice, PriceLevel, TariffType
+
 
 class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching from Elvia data API."""
 
-    nextFetch: datetime
+    next_fetch: datetime
 
     data: GridTariffCollection
 
@@ -24,6 +26,9 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
     priceLevel: PriceLevel or None = None
     hourPrice: HourPrice or None = None
     energyPrice: EnergyPrice or None = None
+
+    forbruksledd: float or None = None
+    kapasitetsledd: float or None = None
 
     def __init__(
         self,
@@ -36,7 +41,7 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
 
         self.api = api
         self.device_info = tariffType
-        self.nextFetch = datetime.now() + timedelta(hours=1)
+        self.next_fetch = datetime.now() + timedelta(hours=1)
 
         self._attr_device_info = DeviceInfo(
             name=self.device_info.title,
@@ -58,23 +63,69 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
 
         try:
             response = await self.api.meteringpoint()
-            await self.mapValues(response)
+            await self.map_values(response)
             return response
         except (Error, ClientConnectorError) as error:
             LOGGER.error("Update error %s", error)
             raise UpdateFailed(error) from error
 
-    async def mapValues(self, data) -> None:
+    async def map_values(self, data) -> None:
+        """Map values."""
+
+        current_datetime = datetime.now()
+
+        pretty_now = (
+            str(current_datetime.year)
+            + "-"
+            + str(current_datetime.month).zfill(2)
+            + "-"
+            + str(current_datetime.day).zfill(2)
+            + "T"
+            + str(current_datetime.hour).zfill(2)
+            + ":"
+            + str(current_datetime.minute).zfill(2)
+            + ":"
+            + str(current_datetime.second).zfill(2)
+            + "+02:00"
+            if localtime().tm_isdst > 0
+            else "+01:00"
+        )
+
+        today_string = (
+            str(current_datetime.year)
+            + "-"
+            + str(current_datetime.month).zfill(2)
+            + "-"
+            + str(current_datetime.day).zfill(2)
+        )
+
         self.tariffType = data.gridTariff.tariffType
-        for fixedPrice in data.gridTariff.tariffPrice.priceInfo.fixedPrices:
-            for priceLevel in fixedPrice.priceLevels:
-                self.priceLevel = priceLevel
-                LOGGER.warning("priceLevel %s", self.priceLevel)
-                
-                for hourPrice in self.priceLevel.hourPrices:
-                    self.hourPrice = hourPrice
-                    LOGGER.warning("Hourprice %s", self.hourPrice)
-                    
-        for energyPrice in data.gridTariff.tariffPrice.priceInfo.energyPrices:
-            self.energyPrice = energyPrice
-            LOGGER.warning("energyPrice %s", self.energyPrice)
+
+        tariff_price = data.gridTariff.tariffPrice
+
+        first_metering_point = next(data.meteringPointsAndPriceLevels)
+        fixed_price_level_id = first_metering_point.currentFixedPriceLevel.levelId
+
+        for hour in tariff_price.hours:
+            start_time = hour.startTime
+            end_time = hour.expiredAt
+            value = hour.energyPrice.total
+
+            if start_time[0:10] == today_string:
+                if (pretty_now >= start_time) and (pretty_now < end_time):
+                    variable_price_per_hour = value
+                    for_loop_break = False
+
+                    for fixed_price_element in tariff_price.priceInfo.fixedPrices:
+                        if hour.fixedPrice.id == fixed_price_element.id:
+                            for price_levels_element in fixed_price_element.priceLevels:
+                                if price_levels_element.id == fixed_price_level_id:
+                                    hour_prices = next(price_levels_element.hourPrices)
+                                    fixed_price_per_hour = hour_prices.total
+                                    for_loop_break = True
+                                    break
+                            if for_loop_break == True:
+                                break
+
+        self.kapasitetsledd = fixed_price_per_hour
+        self.forbruksledd = variable_price_per_hour
