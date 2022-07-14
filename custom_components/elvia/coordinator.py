@@ -129,7 +129,6 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
                                     for_loop_break = True
                                     break
                             if for_loop_break is True:
-                                LOGGER.warning("%s", fixed_price_per_hour)
                                 self.kapasitetsledd = fixed_price_per_hour
                                 self.forbruksledd = variable_price_per_hour
                                 self.level_info = fixed_price_level_info
