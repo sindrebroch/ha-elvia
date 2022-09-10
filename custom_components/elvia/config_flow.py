@@ -22,6 +22,7 @@ SCHEMA = vol.Schema(
     }
 )
 
+
 class ElviaFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for Elvia."""
 
@@ -40,17 +41,17 @@ class ElviaFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             api = ElviaApiClient(
                 api_key=api_key,
                 metering_point_id=metering_point_id,
-                session=async_get_clientsession(self.hass)
+                session=async_get_clientsession(self.hass),
             )
 
-            #try:
-            #    await api.ping()
-            #except Exception:
-            #    return self.async_show_form(
-            #        step_id="user",
-            #        data_schema=SCHEMA,
-            #        errors={"base": "cannot_connect"},
-            #    )
+            try:
+                await api.meteringpoint()
+            except Exception:
+                return self.async_show_form(
+                    step_id="user",
+                    data_schema=SCHEMA,
+                    errors={"base": "cannot_connect"},
+                )
 
             return self.async_create_entry(
                 title="Elvia",
