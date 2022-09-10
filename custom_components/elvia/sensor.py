@@ -21,19 +21,24 @@ SENSORS: tuple[SensorEntityDescription, ...] = (
         key="forbruksledd",
         name="Forbruksledd per kWh",
         icon="mdi:currency-usd",
-        unit_of_measurement="NOK/kWh",
+        native_unit_of_measurement="NOK/kWh",
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
         key="kapasitetsledd",
         name="Kapasitetsledd per time",
         icon="mdi:currency-usd",
-        unit_of_measurement="NOK/h",
+        native_unit_of_measurement="NOK/h",
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
         key="level_info",
-        name="Fixed price level info",
+        name="Fixed price level",
+    ),
+    SensorEntityDescription(
+        key="fixed_price",
+        name="Fixed price monthly",
+        native_unit_of_measurement="kr/month",
     ),
 )
 

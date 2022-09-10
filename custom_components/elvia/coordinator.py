@@ -30,6 +30,7 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
     forbruksledd: float or None = None
     kapasitetsledd: float or None = None
     level_info: str or None = None
+    fixed_price: int or None = None
 
     def __init__(
         self,
@@ -126,10 +127,12 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
                                     fixed_price_level_info = (
                                         price_levels_element.levelInfo
                                     )
+                                    fixed_price = price_levels_element.monthlyTotal
                                     for_loop_break = True
                                     break
                             if for_loop_break is True:
                                 self.kapasitetsledd = fixed_price_per_hour
                                 self.forbruksledd = variable_price_per_hour
                                 self.level_info = fixed_price_level_info
+                                self.fixed_price = fixed_price
                                 break
