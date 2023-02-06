@@ -7,10 +7,8 @@ LOGGER: Logger = getLogger(__package__)
 DOMAIN = "elvia"
 PLATFORMS = ["sensor"]
 
-CONF_INTERVAL = "update_interval"
+CONF_TOKEN = "token"
 CONF_METERING_POINT_ID = "metering_point_id"
-
-DEFAULT_INTERVAL = 60
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 

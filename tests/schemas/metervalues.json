@@ -1,0 +1,26 @@
+{
+    "meteringpoints": [
+        {
+            "meteringPointId": "string",
+            "customerContract": {
+                "startTime": "string",
+                "endTime": "string"
+            },
+            "metervalue": {
+                "fromHour": "string",
+                "toHour": "string",
+                "resolutionMinutes": 0,
+                "timeSeries": [
+                    {
+                        "startTime": "string",
+                        "endTime": "string",
+                        "value": 0.0,
+                        "uom": "string",
+                        "production": true,
+                        "verified": true
+                    }
+                ]
+            }
+        }
+    ]
+}

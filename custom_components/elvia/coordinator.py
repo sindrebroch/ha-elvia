@@ -1,5 +1,7 @@
 """Elvia data coordinator."""
 
+from typing import Any
+
 from time import localtime
 from datetime import timedelta, datetime
 
@@ -18,7 +20,6 @@ from .models import EnergyPrice, GridTariffCollection, HourPrice, PriceLevel, Ta
 class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching from Elvia data API."""
 
-    data: GridTariffCollection
 
     last_hour_fetched: int or None = None
 
@@ -31,6 +32,10 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
     kapasitetsledd: float or None = None
     level_info: str or None = None
     fixed_price: int or None = None
+
+    maxhours: Any or None = None
+    mapped_maxhours: Any or None = None
+    meteringpoint: GridTariffCollection
 
     def __init__(
         self,
@@ -69,17 +74,76 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
             self.last_hour_fetched = current_hour
 
         try:
-            response = await self.api.meteringpoint()
-            await self.map_values(response)
-            return response
+            self.meteringpoint = await self.api.meteringpoint()
+            self.maxhours = await self.api.maxhours()
+
+            await self.map_meteringpoint_values(self.meteringpoint)
+            await self.map_maxhour_values(self.maxhours)
+
+            return {
+                'meteringpoint': self.meteringpoint,
+                'maxhours': self.maxhours,
+            }
         except (Error, ClientConnectorError) as error:
             LOGGER.error("Update error %s", error)
             raise UpdateFailed(error) from error
 
-    async def map_values(self, data) -> None:
+    async def map_maxhour_values(self, data) -> None:
+        aggregates = data['meteringpoints'][0]['maxHoursAggregate']
+
+        self.mapped_maxhours = {}
+
+        for aggregateMonth in aggregates:
+            if aggregateMonth['noOfMonthsBack'] == 0:
+                self.mapped_maxhours["current_month"] = {
+                    "3": {
+                        "value": aggregateMonth['maxHours'][0]['value'],
+                        "startTime": aggregateMonth['maxHours'][0]['startTime'],
+                        "endTime": aggregateMonth['maxHours'][0]['endTime'],
+                        "uom": aggregateMonth['maxHours'][0]['uom'],
+                    },
+                    "2": {
+                        "value": aggregateMonth['maxHours'][1]['value'],
+                        "startTime": aggregateMonth['maxHours'][1]['startTime'],
+                        "endTime": aggregateMonth['maxHours'][1]['endTime'],
+                        "uom": aggregateMonth['maxHours'][1]['uom'],
+                    },
+                    "1": {
+                        "value": aggregateMonth['maxHours'][2]['value'],
+                        "startTime": aggregateMonth['maxHours'][2]['startTime'],
+                        "endTime": aggregateMonth['maxHours'][2]['endTime'],
+                        "uom": aggregateMonth['maxHours'][2]['uom'],
+                    },
+                    "average": aggregateMonth['averageValue'],
+                    "uom": aggregateMonth['uom']
+                }
+            elif aggregateMonth['noOfMonthsBack'] == 1:
+                self.mapped_maxhours["previous_month"] = {
+                    "3": {
+                        "value": aggregateMonth['maxHours'][0]['value'],
+                        "startTime": aggregateMonth['maxHours'][0]['startTime'],
+                        "endTime": aggregateMonth['maxHours'][0]['endTime'],
+                        "uom": aggregateMonth['maxHours'][0]['uom'],
+                    },
+                    "2": {
+                        "value": aggregateMonth['maxHours'][1]['value'],
+                        "startTime": aggregateMonth['maxHours'][1]['startTime'],
+                        "endTime": aggregateMonth['maxHours'][1]['endTime'],
+                        "uom": aggregateMonth['maxHours'][1]['uom'],
+                    },
+                    "1": {
+                        "value": aggregateMonth['maxHours'][2]['value'],
+                        "startTime": aggregateMonth['maxHours'][2]['startTime'],
+                        "endTime": aggregateMonth['maxHours'][2]['endTime'],
+                        "uom": aggregateMonth['maxHours'][2]['uom'],
+                    },
+                    "average": aggregateMonth['averageValue'],
+                    "uom": aggregateMonth['uom']
+                }
+
+    async def map_meteringpoint_values(self, data) -> None:
         """Map values."""
 
-        LOGGER.warn("mapping values %s", data)
         current_datetime = datetime.now()
 
         zoneadjust = "+02:00" if localtime().tm_isdst > 0 else "+01:00"

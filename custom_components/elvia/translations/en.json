@@ -13,23 +13,8 @@
             "user": {
                 "data": {
                     "api_key": "API-key",
-                    "metering_point_id": "Metering point ID"
-                }
-            }
-        }
-    },
-    "options": {
-        "flow_title": "Elvia Options",
-        "abort": {
-            "already_configured": "Service is already configured"
-        },
-        "error": {
-            "cannot_connect": "Failed to connect"
-        },
-        "step": {
-            "init": {
-                "data": {
-                    "update_interval": "Update interval in minutes"
+                    "metering_point_id": "Metering point ID",
+                    "token": "Token"
                 }
             }
         }

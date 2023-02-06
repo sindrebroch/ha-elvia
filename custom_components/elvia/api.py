@@ -38,6 +38,7 @@ class ElviaApiClient:
         self,
         api_key: str,
         metering_point_id: str,
+        token: str,
         session: Optional[aiohttp.client.ClientSession] = None,
     ) -> None:
         """Initialize connection with Elvia."""
@@ -45,13 +46,15 @@ class ElviaApiClient:
         self._session = session
         self._api_key = api_key
         self._metering_point_id = metering_point_id
+        self._token = token
 
-    async def get(self, url: str) -> Any:
+    async def get(self, url: str, headers) -> Any:
         """Get request."""
+        t = self.headers_with_api_key() if headers is None else headers
         return await self.api_wrapper(
             method="GET",
             url=url,
-            headers=self.headers_with_api_key(),
+            headers=t,
         )
 
     async def post(self, url: str, data: dict[str, Any] = {}) -> Any:
@@ -152,15 +155,13 @@ class ElviaApiClient:
             return GridTariffCollection.from_dict(collection)
 
     async def maxhours(self):
-        url = f"{MAX_HOURS_PATH}?meteringPointIds={str(self._metering_point_id)}"
-        LOGGER.warn("url %s", url)
-
-        response = await self.get(url)
-        LOGGER.warn("response %s", response)
-        return
-
+        return await self.get(f"{MAX_HOURS_PATH}?meteringPointIds={str(self._metering_point_id)}", headers=self.headers_with_token())
 
     def headers_with_api_key(self) -> Dict[str, str]:
         """Get headers with api_key added."""
         assert self._api_key is not None
         return {**API_HEADERS, **{"X-API-Key": f"{self._api_key}"}}
+
+    def headers_with_token(self) -> Dict[str, str]:
+        assert self._token is not None
+        return {**API_HEADERS, **{"Authorization": f"Bearer {self._token}"}}

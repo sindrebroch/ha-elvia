@@ -1,0 +1,32 @@
+{
+    "meteringpoints": [
+        {
+            "meteringPointId": "string",
+            "customerContract": {
+                "startDate": "string",
+                "endDate": "string"
+            },
+            "maxHoursCalculatedTime": "string",
+            "maxHoursFromTime": "string",
+            "maxHoursToTime": "string",
+            "maxHoursAggregate": [
+                {
+                    "averageValue": 0.0,
+                    "maxHours": [
+                        {
+                            "startTime": "string",
+                            "endTime": "string",
+                            "value": 0.0,
+                            "uom": "string",
+                            "noOfMonthsBack": 0,
+                            "production": true,
+                            "verified": true
+                        }
+                    ],
+                    "uom": "string",
+                    "noOfMonthsBack": 0
+                }
+            ]
+        }
+    ]
+}

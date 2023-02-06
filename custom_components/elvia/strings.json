@@ -5,17 +5,8 @@
       "user": {
         "data": {
           "api_key": "API-key",
-          "metering_point_id": "Metering Point ID"
-        }
-      }
-    },
-    "options": {
-      "flow_title": "Elvia options",
-      "step": {
-        "init": {
-          "data": {
-            "update_interval": "Update interval"
-          }
+          "metering_point_id": "Metering Point ID",
+          "token": "Token"
         }
       }
     },

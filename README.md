@@ -43,6 +43,9 @@ HomeAssistant-integration for Elvia
 - Fixed price level
 - Fixed price monthly
 
+- Average [current month / previous month] max hours
+- [Current month / previous month] max hour [1 / 2 / 3]
+
 
 ## Debugging
 If something is not working properly, logs might help with debugging. To turn on debug-logging add this to your `configuration.yaml`

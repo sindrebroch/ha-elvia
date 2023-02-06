@@ -8,7 +8,7 @@ from homeassistant.const import CONF_API_KEY
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import ElviaApiClient
-from .const import CONF_METERING_POINT_ID, DOMAIN, LOGGER, PLATFORMS
+from .const import CONF_METERING_POINT_ID, CONF_TOKEN, DOMAIN, LOGGER, PLATFORMS
 from .coordinator import ElviaDataUpdateCoordinator
 
 
@@ -20,6 +20,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     api = ElviaApiClient(
         api_key=entry.data[CONF_API_KEY],
         metering_point_id=entry.data[CONF_METERING_POINT_ID],
+        token=entry.data[CONF_TOKEN],
         session=async_get_clientsession(hass),
     )
 

@@ -423,3 +423,28 @@ class GridTariffCollection:
             gridTariff=(GridTariff.from_dict(data["gridTariff"])),
             meteringPointsAndPriceLevels=(MeteringPointsAndPriceLevels.from_dict(meteringpointandpricelevel) for meteringpointandpricelevel in data["meteringPointsAndPriceLevels"]),
         )
+
+
+#@attr.s(auto_attribs=True)
+#class MaxHours:
+
+    # meteringspoints[]
+        # meteringPointId
+        # customerContract
+            # startDate
+            # endDate
+        # maxHoursCalculatedTime
+        # maxHoursFromTime
+        # maxHoursToTime
+        # maxHoursAggregate[]
+            # averageValue
+            # maxHours[]
+                # startTime
+                # endTime
+                # value
+                # uom
+                # noOfMonthsBack
+                # production
+                # verified
+            # uom
+            # noOfMonthsBack
