@@ -18,9 +18,9 @@ from .models import EnergyPrice, GridTariffCollection, HourPrice, PriceLevel, Ta
 class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching from Elvia data API."""
 
-    next_fetch: datetime
-
     data: GridTariffCollection
+
+    last_hour_fetched: int or None = None
 
     tariffType: TariffType or None = None
     priceLevel: PriceLevel or None = None
@@ -36,14 +36,12 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
         self,
         hass: HomeAssistant,
         api: ElviaApiClient,
-        update_interval: int,
         tariffType: TariffType,
     ) -> None:
         """Initialize."""
 
         self.api = api
         self.device_info = tariffType
-        self.next_fetch = datetime.now() + timedelta(hours=1)
 
         self._attr_device_info = DeviceInfo(
             name=self.device_info.title,
@@ -57,11 +55,18 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
             hass,
             LOGGER,
             name=DOMAIN,
-            update_interval=timedelta(minutes=update_interval),
+            update_interval=timedelta(minutes=1),
         )
 
     async def _async_update_data(self) -> GridTariffCollection:
         """Update data via library."""
+
+        # Only update values once every hour, at the start of the hour.
+        current_hour = datetime.now().time().hour
+        if current_hour == self.last_hour_fetched:
+            return
+        else:
+            self.last_hour_fetched = current_hour
 
         try:
             response = await self.api.meteringpoint()
@@ -74,6 +79,7 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
     async def map_values(self, data) -> None:
         """Map values."""
 
+        LOGGER.warn("mapping values %s", data)
         current_datetime = datetime.now()
 
         zoneadjust = "+02:00" if localtime().tm_isdst > 0 else "+01:00"

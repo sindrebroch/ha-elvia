@@ -40,6 +40,8 @@ HomeAssistant-integration for Elvia
 ## Sensors
 - Kapasitetsledd
 - Forbruksledd
+- Fixed price level
+- Fixed price monthly
 
 
 ## Debugging

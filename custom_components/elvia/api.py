@@ -18,6 +18,7 @@ from .const import (
     TARIFFQUERY_PATH,
     METERINGPOINT_PATH,
     API_HEADERS,
+    MAX_HOURS_PATH,
 )
 from .models import (
     TariffType,
@@ -92,9 +93,11 @@ class ElviaApiClient:
                     LOGGER.debug("Status 200 OK")
                 elif (
                     status == HTTPStatus.UNAUTHORIZED
-                ):  # TODO throw specialized exception
+                ):
+                    # TODO throw specialized exception
                     LOGGER.debug("Status 401 Unauthorized")
-                elif status == HTTPStatus.FORBIDDEN:  # TODO throw specialized exception
+                elif status == HTTPStatus.FORBIDDEN:
+                    # TODO throw specialized exception
                     LOGGER.debug("Status 403 Forbidden")
                 else:
                     LOGGER.debug("Status=%s", status)
@@ -138,6 +141,7 @@ class ElviaApiClient:
 
     async def meteringpoint(self) -> GridTariffCollection:
         """Returns tariff(s) and MPID(s) for the MPIDs(MeteringpointId/Målepunkt-Id) given as input."""
+        # TODO
         today = date.today()
         tomorrow = today + timedelta(days=1)
         response = await self.post(
@@ -146,6 +150,15 @@ class ElviaApiClient:
         )
         for collection in response["gridTariffCollections"]:
             return GridTariffCollection.from_dict(collection)
+
+    async def maxhours(self):
+        url = f"{MAX_HOURS_PATH}?meteringPointIds={str(self._metering_point_id)}"
+        LOGGER.warn("url %s", url)
+
+        response = await self.get(url)
+        LOGGER.warn("response %s", response)
+        return
+
 
     def headers_with_api_key(self) -> Dict[str, str]:
         """Get headers with api_key added."""
