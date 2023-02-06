@@ -39,14 +39,20 @@ HomeAssistant-integration for Elvia
 
 
 ## Sensors
-- Kapasitetsledd
-- Forbruksledd
+- Energy price
+   - Daily tariff (array of hourly values for the day)
+
+- Fixed price hourly
 - Fixed price level
 - Fixed price monthly
 
-- Average [current month / previous month] max hours
-- [Current month / previous month] max hour [1 / 2 / 3]
+- Average max
+   - Current month
+   - Previous month
 
+- Max hours [1, 2, 3]
+   - Current month
+   - Previous month
 
 ## Debugging
 If something is not working properly, logs might help with debugging. To turn on debug-logging add this to your `configuration.yaml`
