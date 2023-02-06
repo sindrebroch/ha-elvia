@@ -2,6 +2,8 @@
 
 from typing import Any, cast
 
+from datetime import datetime
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.components.sensor import (
     SensorEntity,
@@ -16,66 +18,35 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN, LOGGER
 from .coordinator import ElviaDataUpdateCoordinator
 
-SENSORS: tuple[SensorEntityDescription, ...] = (
+FIXED_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
-        key="forbruksledd",
-        name="Forbruksledd per kWh",
-        icon="mdi:currency-usd",
-        native_unit_of_measurement="NOK/kWh",
-        state_class=SensorStateClass.MEASUREMENT,
-    ),
-    SensorEntityDescription(
-        key="kapasitetsledd",
-        name="Kapasitetsledd per time",
+        key="fixed_price_hourly",
+        name="Fixed price hourly",
         icon="mdi:currency-usd",
         native_unit_of_measurement="NOK/h",
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
-        key="level_info",
-        name="Fixed price level",
+        key="fixed_price_level_info",
+        name="Fixed price level info",
     ),
     SensorEntityDescription(
-        key="fixed_price",
-        name="Fixed price monthly",
-        native_unit_of_measurement="kr/month",
+        key="fixed_price_level",
+        name="Fixed price monthly level",
+        native_unit_of_measurement="NOK/month",
     ),
 )
 
-MAX_HOURS_SENSORS: tuple[SensorEntityDescription, ...] = (
+ENERGY_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
-        key="max_hour_aggregate_current_month_1",
-        name="Max hour aggregate current month 1",
-    ),
-    SensorEntityDescription(
-        key="max_hour_aggregate_current_month_2",
-        name="Max hour aggregate current month 2",
-    ),
-    SensorEntityDescription(
-        key="max_hour_aggregate_current_month_3",
-        name="Max hour aggregate current month 3",
-    ),
-    SensorEntityDescription(
-        key="max_hour_average_current_month",
-        name="Max hour average current month",
-    ),
-    SensorEntityDescription(
-        key="max_hour_aggregate_previous_month_1",
-        name="Max hour aggregate previous month 1",
-    ),
-    SensorEntityDescription(
-        key="max_hour_aggregate_previous_month_2",
-        name="Max hour aggregate previous month 2",
-    ),
-    SensorEntityDescription(
-        key="max_hour_aggregate_previous_month_3",
-        name="Max hour aggregate previous month 3",
-    ),
-    SensorEntityDescription(
-        key="max_hour_average_previous_month",
-        name="Max hour average previous month",
+        key="energy_price",
+        name="Energy price",
+        icon="mdi:currency-usd",
+        native_unit_of_measurement="NOK/kWh",
+        state_class=SensorStateClass.MEASUREMENT,
     ),
 )
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -88,19 +59,23 @@ async def async_setup_entry(
 
     async_add_entities(
         ElviaCoordinatorSensor(coordinator, description, "elvia")
-        for description in SENSORS
+        for description in FIXED_PRICE_SENSORS
+    )
+
+    async_add_entities(
+        ElviaEnergySensor(coordinator, description, "elvia")
+        for description in ENERGY_PRICE_SENSORS
     )
 
     async_add_entities([
         ElviaMaxHourAverageSensor(coordinator, True),
+        ElviaMaxHourAverageSensor(coordinator, False),
         ElviaMaxHourSensor(coordinator, True, 1),
         ElviaMaxHourSensor(coordinator, True, 2),
         ElviaMaxHourSensor(coordinator, True, 3),
-        ElviaMaxHourAverageSensor(coordinator, False),
         ElviaMaxHourSensor(coordinator, False, 1),
         ElviaMaxHourSensor(coordinator, False, 2),
         ElviaMaxHourSensor(coordinator, False, 3),
-        ElviaPriceArraySensor(coordinator),
     ])
 
 
@@ -149,17 +124,17 @@ class ElviaCoordinatorSensor(ElviaSensor):
     def update_from_data(self) -> None:
         self.sensor_data = self.coordinator.__getattribute__(self.attribute)
 
-class ElviaMaxHourCurrentMonthAverageSensor(ElviaSensor):
-    """Define a ElviaMaxHourSensor entity."""
+class ElviaEnergySensor(ElviaSensor):
+    """Define a ElviaTariffTypeSensor entity."""
 
     def update_from_data(self) -> None:
-        self.sensor_data = self.coordinator.mapped_maxhours['current_month']['average']
+        self.sensor_data = self.coordinator.__getattribute__(self.attribute)
 
-class ElviaMaxHourPreviousMonthAverageSensor(ElviaSensor):
-    """Define a ElviaMaxHourSensor entity."""
-
-    def update_from_data(self) -> None:
-        self.sensor_data = self.coordinator.mapped_maxhours['previous_month']['average']
+    @property
+    def extra_state_attributes(self):
+        return {
+            "daily_tariff": self.coordinator.tariff_prices
+        }
 
 class ElviaMaxHourAverageSensor(ElviaSensor):
     """Define a ElviaMaxHourSensor entity."""
@@ -174,8 +149,9 @@ class ElviaMaxHourAverageSensor(ElviaSensor):
         self.month = "current_month" if current_month else "previous_month"
         month_str = "current month" if current_month else "previous month"
         description = SensorEntityDescription(
-            key=f"max_hour_average_{self.month}",
-            name=f"Average {month_str} max hours",
+            key=f"average_max_hours{self.month}",
+            name=f"Average max hours {month_str}",
+            state_class=SensorStateClass.MEASUREMENT,
         )
         super().__init__(coordinator, description, "elvia")
 
@@ -199,10 +175,11 @@ class ElviaMaxHourSensor(ElviaSensor):
 
         self.sensor_index = str(sensor_index)
         self.month = "current_month" if current_month else "previous_month"
-        month_str = "Current month" if current_month else "Previous month"
+        month_str = "current month" if current_month else "previous month"
         description = SensorEntityDescription(
             key=f"max_hour_{self.month}_{sensor_index}",
-            name=f"{month_str} max hour {sensor_index}",
+            name=f"Max hour {sensor_index} {month_str}",
+            state_class=SensorStateClass.MEASUREMENT,
         )
         super().__init__(coordinator, description, "elvia")
 
@@ -218,26 +195,4 @@ class ElviaMaxHourSensor(ElviaSensor):
         return {
             "startTime": self.coordinator.mapped_maxhours[self.month][self.sensor_index]['startTime'],
             "endTime": self.coordinator.mapped_maxhours[self.month][self.sensor_index]['endTime']
-        }
-
-class ElviaPriceArraySensor(ElviaSensor):
-    def __init__(
-        self,
-        coordinator: ElviaDataUpdateCoordinator,
-    ) -> None:
-        """Initialize."""
-
-        description = SensorEntityDescription(
-            key="tariff_price_array",
-            name="Tariff price array",
-        )
-        super().__init__(coordinator, description, "elvia")
-
-    def update_from_data(self) -> None:
-        self.sensor_data = "placeholder"
-
-    @property
-    def extra_state_attributes(self):
-        return {
-            "tariffprice": self.coordinator.tariff_prices
         }

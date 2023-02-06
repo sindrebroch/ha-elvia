@@ -20,15 +20,14 @@ from .models import EnergyPrice, GridTariffCollection, HourPrice, PriceLevel, Ta
 class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching from Elvia data API."""
 
-
     last_hour_fetched: int or None = None
 
     tariffType: TariffType or None = None
 
-    forbruksledd: float or None = None
-    kapasitetsledd: float or None = None
-    level_info: str or None = None
-    fixed_price: int or None = None
+    energy_price: float or None = None
+    fixed_price_hourly: float or None = None
+    fixed_price_level_info: str or None = None
+    fixed_price_level: int or None = None
 
     tariff_prices: Any or None = None
 
@@ -88,58 +87,27 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
             LOGGER.error("Update error %s", error)
             raise UpdateFailed(error) from error
 
+    def getMonth(self, object, index):
+        return {
+            "value": object['maxHours'][index]['value'],
+            "startTime": object['maxHours'][index]['startTime'],
+            "endTime": object['maxHours'][index]['endTime'],
+            "uom": object['maxHours'][index]['uom'],
+        }
+
     async def map_maxhour_values(self, data) -> None:
-        aggregates = data['meteringpoints'][0]['maxHoursAggregate']
 
         self.mapped_maxhours = {}
 
-        for aggregateMonth in aggregates:
-            if aggregateMonth['noOfMonthsBack'] == 0:
-                self.mapped_maxhours["current_month"] = {
-                    "3": {
-                        "value": aggregateMonth['maxHours'][0]['value'],
-                        "startTime": aggregateMonth['maxHours'][0]['startTime'],
-                        "endTime": aggregateMonth['maxHours'][0]['endTime'],
-                        "uom": aggregateMonth['maxHours'][0]['uom'],
-                    },
-                    "2": {
-                        "value": aggregateMonth['maxHours'][1]['value'],
-                        "startTime": aggregateMonth['maxHours'][1]['startTime'],
-                        "endTime": aggregateMonth['maxHours'][1]['endTime'],
-                        "uom": aggregateMonth['maxHours'][1]['uom'],
-                    },
-                    "1": {
-                        "value": aggregateMonth['maxHours'][2]['value'],
-                        "startTime": aggregateMonth['maxHours'][2]['startTime'],
-                        "endTime": aggregateMonth['maxHours'][2]['endTime'],
-                        "uom": aggregateMonth['maxHours'][2]['uom'],
-                    },
-                    "average": aggregateMonth['averageValue'],
-                    "uom": aggregateMonth['uom']
-                }
-            elif aggregateMonth['noOfMonthsBack'] == 1:
-                self.mapped_maxhours["previous_month"] = {
-                    "3": {
-                        "value": aggregateMonth['maxHours'][0]['value'],
-                        "startTime": aggregateMonth['maxHours'][0]['startTime'],
-                        "endTime": aggregateMonth['maxHours'][0]['endTime'],
-                        "uom": aggregateMonth['maxHours'][0]['uom'],
-                    },
-                    "2": {
-                        "value": aggregateMonth['maxHours'][1]['value'],
-                        "startTime": aggregateMonth['maxHours'][1]['startTime'],
-                        "endTime": aggregateMonth['maxHours'][1]['endTime'],
-                        "uom": aggregateMonth['maxHours'][1]['uom'],
-                    },
-                    "1": {
-                        "value": aggregateMonth['maxHours'][2]['value'],
-                        "startTime": aggregateMonth['maxHours'][2]['startTime'],
-                        "endTime": aggregateMonth['maxHours'][2]['endTime'],
-                        "uom": aggregateMonth['maxHours'][2]['uom'],
-                    },
-                    "average": aggregateMonth['averageValue'],
-                    "uom": aggregateMonth['uom']
-                }
+        for aggregateMonth in data['meteringpoints'][0]['maxHoursAggregate']:
+            month = "current_month" if aggregateMonth['noOfMonthsBack'] else "previous_month"
+            self.mapped_maxhours[month] = {
+                "1": self.getMonth(aggregateMonth, 2),
+                "2": self.getMonth(aggregateMonth, 1),
+                "3": self.getMonth(aggregateMonth, 0),
+                "average": aggregateMonth['averageValue'],
+                "uom": aggregateMonth['uom']
+            }
 
     async def map_meteringpoint_values(self, data) -> None:
         """Map values."""
@@ -178,7 +146,7 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
         first_metering_point = next(data.meteringPointsAndPriceLevels)
         fixed_price_level_id = first_metering_point.currentFixedPriceLevel.levelId
 
-        self.tariff_prices = [] # TODO should be tariffprice
+        self.tariff_prices = []
 
         for hour in tariff_price.hours:
             start_time = hour.startTime
@@ -188,7 +156,7 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
             self.tariff_prices.append({
                 "startTime": start_time,
                 "endTime": end_time,
-                "total": value
+                "total": value,
             })
 
             if start_time[0:10] == today_string:
@@ -210,9 +178,8 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
                                     for_loop_break = True
                                     break
                             if for_loop_break is True:
-                                self.forbruksledd = variable_price_per_hour # Energy price current (kan se average i app)
-
-                                self.kapasitetsledd = fixed_price_per_hour
-                                self.level_info = fixed_price_level_info
-                                self.fixed_price = fixed_price
+                                self.energy_price = variable_price_per_hour
+                                self.fixed_price_hourly = fixed_price_per_hour
+                                self.fixed_price_level_info = fixed_price_level_info
+                                self.fixed_price_level = fixed_price
                                 break
