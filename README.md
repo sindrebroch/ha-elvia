@@ -52,7 +52,11 @@ HomeAssistant-integration for Elvia
 
 - Max hours [1, 2, 3]
    - Current month
+      - StartTime (attribute)
+      - EndTime (attribute)
    - Previous month
+      - StartTime (attribute)
+      - EndTime (attribute)
 
 ## Debugging
 If something is not working properly, logs might help with debugging. To turn on debug-logging add this to your `configuration.yaml`
