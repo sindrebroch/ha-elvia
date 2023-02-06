@@ -24,18 +24,18 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
     last_hour_fetched: int or None = None
 
     tariffType: TariffType or None = None
-    priceLevel: PriceLevel or None = None
-    hourPrice: HourPrice or None = None
-    energyPrice: EnergyPrice or None = None
 
     forbruksledd: float or None = None
     kapasitetsledd: float or None = None
     level_info: str or None = None
     fixed_price: int or None = None
 
+    tariff_prices: Any or None = None
+
     maxhours: Any or None = None
     mapped_maxhours: Any or None = None
     meteringpoint: GridTariffCollection
+
 
     def __init__(
         self,
@@ -178,10 +178,18 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
         first_metering_point = next(data.meteringPointsAndPriceLevels)
         fixed_price_level_id = first_metering_point.currentFixedPriceLevel.levelId
 
+        self.tariff_prices = [] # TODO should be tariffprice
+
         for hour in tariff_price.hours:
             start_time = hour.startTime
             end_time = hour.expiredAt
             value = hour.energyPrice.total
+
+            self.tariff_prices.append({
+                "startTime": start_time,
+                "endTime": end_time,
+                "total": value
+            })
 
             if start_time[0:10] == today_string:
                 if (pretty_now >= start_time) and (pretty_now < end_time):
@@ -191,6 +199,7 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
                     for fixed_price_element in tariff_price.priceInfo.fixedPrices:
                         if hour.fixedPrice.id == fixed_price_element.id:
                             for price_levels_element in fixed_price_element.priceLevels:
+
                                 if price_levels_element.id == fixed_price_level_id:
                                     hour_prices = next(price_levels_element.hourPrices)
                                     fixed_price_per_hour = hour_prices.total
@@ -201,8 +210,9 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
                                     for_loop_break = True
                                     break
                             if for_loop_break is True:
+                                self.forbruksledd = variable_price_per_hour # Energy price current (kan se average i app)
+
                                 self.kapasitetsledd = fixed_price_per_hour
-                                self.forbruksledd = variable_price_per_hour
                                 self.level_info = fixed_price_level_info
                                 self.fixed_price = fixed_price
                                 break

@@ -100,6 +100,7 @@ async def async_setup_entry(
         ElviaMaxHourSensor(coordinator, False, 1),
         ElviaMaxHourSensor(coordinator, False, 2),
         ElviaMaxHourSensor(coordinator, False, 3),
+        ElviaPriceArraySensor(coordinator),
     ])
 
 
@@ -217,4 +218,26 @@ class ElviaMaxHourSensor(ElviaSensor):
         return {
             "startTime": self.coordinator.mapped_maxhours[self.month][self.sensor_index]['startTime'],
             "endTime": self.coordinator.mapped_maxhours[self.month][self.sensor_index]['endTime']
+        }
+
+class ElviaPriceArraySensor(ElviaSensor):
+    def __init__(
+        self,
+        coordinator: ElviaDataUpdateCoordinator,
+    ) -> None:
+        """Initialize."""
+
+        description = SensorEntityDescription(
+            key="tariff_price_array",
+            name="Tariff price array",
+        )
+        super().__init__(coordinator, description, "elvia")
+
+    def update_from_data(self) -> None:
+        self.sensor_data = "placeholder"
+
+    @property
+    def extra_state_attributes(self):
+        return {
+            "tariffprice": self.coordinator.tariff_prices
         }
