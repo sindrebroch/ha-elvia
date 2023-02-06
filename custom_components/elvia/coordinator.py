@@ -100,7 +100,7 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
         self.mapped_maxhours = {}
 
         for aggregateMonth in data['meteringpoints'][0]['maxHoursAggregate']:
-            month = "current_month" if aggregateMonth['noOfMonthsBack'] else "previous_month"
+            month = "current_month" if aggregateMonth['noOfMonthsBack'] == 0 else "previous_month"
             self.mapped_maxhours[month] = {
                 "1": self.getMonth(aggregateMonth, 2),
                 "2": self.getMonth(aggregateMonth, 1),
