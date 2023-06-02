@@ -8,6 +8,7 @@ from datetime import timedelta, datetime
 from aiohttp.client_exceptions import ClientConnectorError
 from voluptuous.error import Error
 
+from homeassistant.const import STATE_UNKNOWN
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
@@ -88,12 +89,21 @@ class ElviaDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed(error) from error
 
     def getMonth(self, object, index):
-        return {
-            "value": object['maxHours'][index]['value'],
-            "startTime": object['maxHours'][index]['startTime'],
-            "endTime": object['maxHours'][index]['endTime'],
-            "uom": object['maxHours'][index]['uom'],
-        }
+        try:
+            return {
+                "value": object['maxHours'][index]['value'],
+                "startTime": object['maxHours'][index]['startTime'],
+                "endTime": object['maxHours'][index]['endTime'],
+                "uom": object['maxHours'][index]['uom'],
+            }
+        except IndexError:
+            LOGGER.debug("Maxhour not found for day %s in month", index)
+            return {
+                "value": 0,
+                "startTime": STATE_UNKNOWN,
+                "endTime": STATE_UNKNOWN,
+                "uom": "",
+            }
 
     async def map_maxhour_values(self, data) -> None:
 
