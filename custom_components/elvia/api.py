@@ -144,12 +144,9 @@ class ElviaApiClient:
 
     async def meteringpoint(self) -> GridTariffCollection:
         """Returns tariff(s) and MPID(s) for the MPIDs(MeteringpointId/Målepunkt-Id) given as input."""
-        # TODO
-        today = date.today()
-        tomorrow = today + timedelta(days=1)
         response = await self.post(
             METERINGPOINT_PATH,
-            '{ "startTime": "' + str(today) + 'T00:00:00", "endTime": "' + str(tomorrow) + 'T00:00:00", "meteringPointIds": [ "' + str(self._metering_point_id) + '" ] }',
+            '{ "range": "today", "meteringPointIds": [ "' + str(self._metering_point_id) + '" ] }',
         )
         for collection in response["gridTariffCollections"]:
             return GridTariffCollection.from_dict(collection)
