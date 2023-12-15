@@ -22,7 +22,7 @@ FIXED_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key="fixed_price_hourly",
         name="Fixed price hourly",
-        icon="mdi:currency-usd",
+        icon="mdi:cash",
         native_unit_of_measurement="NOK/h",
         state_class=SensorStateClass.MEASUREMENT,
     ),
@@ -33,6 +33,7 @@ FIXED_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key="fixed_price_level",
         name="Fixed price monthly level",
+        icon="mdi:cash",
         native_unit_of_measurement="NOK/month",
     ),
 )
@@ -41,7 +42,7 @@ ENERGY_PRICE_SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key="energy_price",
         name="Energy price",
-        icon="mdi:currency-usd",
+        icon="mdi:cash",
         native_unit_of_measurement="NOK/kWh",
         state_class=SensorStateClass.MEASUREMENT,
     ),
@@ -151,6 +152,7 @@ class ElviaMaxHourAverageSensor(ElviaSensor):
         description = SensorEntityDescription(
             key=f"average_max_hours{self.month}",
             name=f"Average max hours {month_str}",
+            icon="mdi:chart-areaspline",
             state_class=SensorStateClass.MEASUREMENT,
         )
         super().__init__(coordinator, description, "elvia")
@@ -179,6 +181,7 @@ class ElviaMaxHourSensor(ElviaSensor):
         description = SensorEntityDescription(
             key=f"max_hour_{self.month}_{sensor_index}",
             name=f"Max hour {sensor_index} {month_str}",
+            icon="mdi:lightning-bolt",
             state_class=SensorStateClass.MEASUREMENT,
         )
         super().__init__(coordinator, description, "elvia")
