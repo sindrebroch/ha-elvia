@@ -93,14 +93,11 @@ class ElviaSensor(CoordinatorEntity, SensorEntity):
         key_prefix: str,
     ) -> None:
         """Initialize."""
-
-        description.key = f"{key_prefix}_{description.key}"
-
         super().__init__(coordinator)
         self.coordinator = coordinator
         self.entity_description = description
         self.attribute = self.entity_description.key.replace(f"{key_prefix}_", "")
-        self._attr_unique_id = f"{description.key}"
+        self._attr_unique_id = f"{key_prefix}_{description.key}"
         self._attr_device_info = coordinator._attr_device_info
         self.update_from_data()
 
